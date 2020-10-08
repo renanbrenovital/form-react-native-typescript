@@ -6,22 +6,16 @@ interface Props extends ButtonProps {
   color?: string;
   fontSize?: string;
   width?: string;
-  iconType?: any;
-  iconName?: string;
+  icon?: any;
   iconSize?: number;
   iconLeft?: boolean;
 }
 
-const Link: React.FC<Props> = ({ title, iconType: Icon, iconName, iconSize, color, fontSize, ...rest }) => {
+const Link: React.FC<Props> = ({ title, icon: Icon, iconSize, color, fontSize, ...rest }) => {
   return (
     <LinkContainer {...rest}>
       <LinkText color={color} fontSize={fontSize}>{title}</LinkText>
-      {Icon && 
-        <Icon
-          name={iconName}
-          size={iconSize}
-          color={color} 
-        />} 
+      {Icon && <Icon size={iconSize} color={color} />} 
     </LinkContainer>
   );
 };

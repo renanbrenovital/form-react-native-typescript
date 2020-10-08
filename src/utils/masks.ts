@@ -1,11 +1,11 @@
-function cep(value: string) {
+export function cepMask(value: string) {
   return value
     .replace(/\D/g, '') 
     .replace(/(\d{5})(\d)/, '$1-$2')
     .replace(/(-\d{3})\d+?$/, '$1');
 }
 
-function phone(value: string) {
+export function phoneMask(value: string) {
   return value
     .replace(/\D/g, '') 
     .replace(/(\d{2})(\d)/, '($1) $2')
@@ -13,14 +13,14 @@ function phone(value: string) {
     .replace(/(-\d{4})\d+?$/, '$1');
 }
 
-function currency(value: string) {
+export function currencyMask(value: string) {
   return value
     .replace(/\D/g, "")
     .replace(/(\d)(\d{2})$/, "$1,$2")
     .replace(/(?=(\d{3})+(\D))\B/g, ".");
 }
 
-function birthday(value: string) {
+export function birthdayMask(value: string) {
   return value
     .replace(/\D/g, '') 
     .replace(/(\d{2})(\d)/, '$1/$2')
@@ -28,7 +28,7 @@ function birthday(value: string) {
     .replace(/(\/\d{4})\d+?$/, '$1');
 }
 
-function cpf (value: string) {
+export function cpfMask (value: string) {
   return value
     .replace(/\D/g, '') 
     .replace(/(\d{3})(\d)/, '$1.$2')
@@ -36,5 +36,3 @@ function cpf (value: string) {
     .replace(/(\d{3})(\d{1,2})/, '$1-$2')
     .replace(/(-\d{2})\d+?$/, '$1');
 }
-
-export { cep, phone, currency, birthday, cpf };

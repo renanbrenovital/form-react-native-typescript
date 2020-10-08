@@ -1,7 +1,6 @@
 import React from "react";
-import { Container, Form } from "./styles";
-import { cpf } from "../../utils/masks";
-import { AntDesign, MaterialCommunityIcons} from '../../utils/icons';
+import { Container, Form, IconDocument, IconPassword, IconError, IconCreateAccount } from "./styles";
+import { cpfMask } from "../../utils/masks";
 import { useTheme } from 'react-native-paper';
 import Input from "../../components/Input";
 import Button from "../../components/Button";
@@ -26,44 +25,40 @@ export default function SignIn() {
     <Container>
       <Form>
         <Input
-          label='CPF'
-          iconType={AntDesign}
-          iconName='Safety'
-          mask={cpf}
+          label='Digite seu CPF'
+          icon={IconDocument}
+          mask={cpfMask}
           maxLength={14}
-          keyboardType="numeric"        
+          keyboardType="numeric"
+          error="CPF é obrigatório"
         />
-
-        {/* <Input
-          label='Senha'
-          iconType={AntDesign}
-          iconName='lock1'
+        <Input
+          label='Digite sua Senha'
+          icon={IconPassword}
           maxLength={128}
           secureTextEntry={true}
-        /> */}
-
+          error=""
+        />
         <Button
           title="Entrar"
           onPress={handleSubmit} 
           background={colors.secondary}
         />
-
         <Link 
           title="Esqueceu a senha?"
-          onPress={navigateToForgotPasswordScreen}
-          color={colors.light}
           fontSize="12px"
+          color={colors.light}
+          onPress={navigateToForgotPasswordScreen}
         />
-      </Form>
-      
+      </Form>      
       <Link 
         title="Criar uma conta"
-        onPress={navigateToSignUpScreen} 
+        width="140px"
+        fontSize="14px"
         color={colors.light}
-        width="160px"
-        iconType={MaterialCommunityIcons}
-        iconName='account-plus'
-        iconSize={22}
+        icon={IconCreateAccount}
+        iconSize={20}
+        onPress={navigateToSignUpScreen} 
       />
     </Container>
   );

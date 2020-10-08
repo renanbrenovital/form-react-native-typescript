@@ -1,20 +1,22 @@
-import React, { useState, useRef } from "react";
-import { InputContainer, InputText } from './styles';
-import { TextInputProps, View } from "react-native";
-import { useTheme, HelperText } from "react-native-paper";
+import React, { useState, useCallback } from "react";
+import { InputContainer, InputText, IconContainer, IconError } from './styles';
+import { TextInputProps } from "react-native";
+import { useTheme, HelperText as InputError } from "react-native-paper";
 
 interface InputProps extends TextInputProps {
   label: string;
-  iconType?: any;
-  iconName?: string;
+  icon?: any;
+  error?: string;
   mask?(text: string): React.SetStateAction<string>;
 }
 
-const Input: React.FC<InputProps> = ({ iconType: Icon, iconName, label, mask, ...rest }) => {
-  const inputRef = useRef(null);
+interface Icon {
+  size: number;
+}
+
+const Input: React.FC<InputProps> = ({ icon: IconDefault, label, mask, error, ...rest }) => {
   const { colors } = useTheme();
-  const [value, setValue] = useState('000.000.000-00');
-  const [error, setError] = useState('CPF Inválido');
+  const [value, setValue] = useState('');
   
   function onChangeText(text: string) {
     if(mask) {
@@ -22,43 +24,35 @@ const Input: React.FC<InputProps> = ({ iconType: Icon, iconName, label, mask, ..
       setValue(maskedText);
       return;
     }
-
     setValue(text);
   }
 
-  function hasError() { return Boolean(error); }
+  const hasError = useCallback(() => Boolean(error), [error]);
+  
+  const InputIcon = ({ size }: Icon) => (
+    <IconContainer>
+      {hasError() 
+        ? <IconError size={size} color={colors.error} /> 
+        : <IconDefault size={size} color={colors.primary} /> 
+      }
+    </IconContainer>
+  );
+    
+  const Color = hasError() ? colors.error : colors.primary;
 
   return (
-    <View>
-      <InputContainer>
-        <InputText
-          ref={inputRef}
-          value={value}
-          label={label}
-          onChangeText={onChangeText}
-          selectionColor={colors.primary}
-          underlineColor={error ? colors.error : colors.primary}
-          onBlur={() => setError('')}
-          {...rest}
-        />
-        {Icon && 
-          <Icon 
-            size={22}
-            name={iconName}
-            color={colors.primary}
-            style={{
-              position: "absolute",
-              right: 20,
-              top: 22,
-              opacity: 0.6,
-            }}
-          />}      
-        {hasError() && 
-          <HelperText type="error">
-            {error}
-          </HelperText>}
-      </InputContainer>
-    </View>
+    <InputContainer>
+      <InputText
+        value={value}
+        label={label}
+        onChangeText={onChangeText}
+        selectionColor={Color}
+        underlineColor={Color}
+        {...rest}
+      />
+      <InputIcon size={22} />
+      <InputError type="error">{error}</InputError>
+    </InputContainer>
   );
 };
 
