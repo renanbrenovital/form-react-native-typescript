@@ -39,12 +39,11 @@ const Input: React.FC<InputProps> = ({ icon: IconDefault, label, mask, error, ..
 
   return (
       <Container>
-        <TextInput
+        <TextInput 
           value={value}
           label={label}
           onChangeText={onChangeText}
           underlineColor={underlineColor}
-          onBlur={() => setIsValid(true)}
           {...rest}
         />
         <Icon />
