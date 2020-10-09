@@ -20,12 +20,8 @@ const Input: React.FC<InputProps> = ({ icon: IconDefault, label, mask, error, ..
   const [isValid, setIsValid] = useState(false);
   
   function onChangeText(text: string) {
-    if(mask) {
-      const maskedText = mask(text);
-      setValue(maskedText);
-      return;
-    }
-    setValue(text);
+    const value = mask ? mask(text) : text;
+    setValue(value);
   }
 
   const hasError = useCallback(() => Boolean(error), [error]);
