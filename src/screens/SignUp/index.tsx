@@ -34,7 +34,7 @@ export default function SignUp() {
           error=""
         />
         <Input
-          label='Digite seu Email'
+          label='Digite seu E-mail'
           icon={IconEmail}
           secureTextEntry={true}
           error=""

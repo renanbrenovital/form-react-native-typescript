@@ -17,6 +17,7 @@ interface Icon {
 const Input: React.FC<InputProps> = ({ icon: IconDefault, label, mask, error, ...rest }) => {
   const { colors } = useTheme();
   const [value, setValue] = useState('');
+  const [isValid, setIsValid] = useState(false);
   
   function onChangeText(text: string) {
     if(mask) {
@@ -33,7 +34,7 @@ const Input: React.FC<InputProps> = ({ icon: IconDefault, label, mask, error, ..
     <IconContainer>
       {hasError() 
         ? <IconError size={size} color={colors.error} /> 
-        : <IconDefault size={size} color={colors.primary} /> 
+        : <IconDefault size={size} color={isValid ? 'green': colors.primary} /> 
       }
     </IconContainer>
   );
@@ -47,6 +48,7 @@ const Input: React.FC<InputProps> = ({ icon: IconDefault, label, mask, error, ..
           label={label}
           onChangeText={onChangeText}
           underlineColor={underlineColor}
+          onBlur={() => setIsValid(true)}
           {...rest}
         />
         <Icon />
