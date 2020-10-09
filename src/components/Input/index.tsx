@@ -9,7 +9,6 @@ interface InputProps extends TextInputProps {
   error?: string;
   mask?(text: string): React.SetStateAction<string>;
 }
-
 interface Icon {
   size?: number;
 }

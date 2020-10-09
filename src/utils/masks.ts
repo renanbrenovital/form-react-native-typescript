@@ -1,11 +1,11 @@
-export function cepMask(value: string) {
+export function maskCEP(value: string) {
   return value
     .replace(/\D/g, '') 
     .replace(/(\d{5})(\d)/, '$1-$2')
     .replace(/(-\d{3})\d+?$/, '$1');
 }
 
-export function phoneMask(value: string) {
+export function maskTelephone(value: string) {
   return value
     .replace(/\D/g, '') 
     .replace(/(\d{2})(\d)/, '($1) $2')
@@ -13,14 +13,14 @@ export function phoneMask(value: string) {
     .replace(/(-\d{4})\d+?$/, '$1');
 }
 
-export function currencyMask(value: string) {
+export function maskCurrency(value: string) {
   return value
     .replace(/\D/g, "")
     .replace(/(\d)(\d{2})$/, "$1,$2")
     .replace(/(?=(\d{3})+(\D))\B/g, ".");
 }
 
-export function birthdayMask(value: string) {
+export function maskBirthday(value: string) {
   return value
     .replace(/\D/g, '') 
     .replace(/(\d{2})(\d)/, '$1/$2')
@@ -28,7 +28,7 @@ export function birthdayMask(value: string) {
     .replace(/(\/\d{4})\d+?$/, '$1');
 }
 
-export function cpfMask (value: string) {
+export function maskCPF (value: string) {
   return value
     .replace(/\D/g, '') 
     .replace(/(\d{3})(\d)/, '$1.$2')

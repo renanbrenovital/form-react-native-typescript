@@ -1,91 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Container, Form, IconDocument, IconPerson, IconEmail, IconSignIn } from "./styles";
-import { cpfMask } from "../../utils/masks";
+import { validateFullName, validateCPF, validateEmail, validateStep1 } from "../../utils/validations";
+import { maskCPF } from "../../utils/masks";
 import { useTheme } from 'react-native-paper';
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import Link from "../../components/Link";
-import * as yup from 'yup';
-interface Person {
-	document: string;
-  full_name: string;
-  email: string;
-}
 
 type Error = {
   [key: string]: string;
 }
 
-type YupErrors = {
-  inner: Array<Error>;
-}
-
 export default function SignUp() {
   const { colors } = useTheme();
-  const [errors, setErros] = useState({} as Error);
-
-  const personSchema: yup.ObjectSchema<Person> = yup.object({
-    document: yup.string().required('CPF é obrigatório').defined(),
-    full_name: yup.string().required('Nome é obrigatório').defined(),
-    email: yup.string().email('E-mail inválido').required('E-mail é obrigatório').defined(),
-  }).defined();
-
-  const fullNameSchema: yup.ObjectSchema = yup.object({
-    full_name: yup.string().required('Nome é obrigatório').defined(),
-  }).defined();
-
-  function organizeYupErrors(yupErrors: YupErrors) {
-    const errors: Error = {};
-    yupErrors.inner.forEach((error) => {
-      const { path, message } = error;
-      errors[path] = message;
-    });    
-    return errors;
-  }
-
-  async function handleSubmit() {
-    const personData = {
-      document: "01718985169",
-      full_name: "adfasdf",
-      email: "renan@gmail.com"
-    }
-    
-    const yupOptions = {
-      abortEarly: false,
-    }
-    
-    return personSchema
-      .validate(personData, yupOptions)
-      .then(data => {
-        setErros({});
-      })
-      .catch(yupErrors => {
-        const errors = organizeYupErrors(yupErrors);
-        setErros(errors);
-      });
-  }  
-  
-  async function name() {
-    const personData = {
-      full_name: "aaa",
-    }
-    
-    const yupOptions = {
-      abortEarly: true,
-    }
-    
-    return fullNameSchema
-      .validate(personData, yupOptions)
-      .then(data => {
-        setErros({});
-      })
-      .catch(yupErrors => {
-        setErros({ 'full_name': yupErrors.errors[0]});
-      });
-  }
+  const [errors, setErrors] = useState({} as Error);
 
   function navigateToSignInScreen() {
     console.log('acessar minha conta');
+  }
+
+  const saveError = useCallback((error) => {
+    setErrors((prevErrors) => ({ ...prevErrors, ...error }));
+  }, []);
+
+  async function handleSubmit() {
+    const document = "01718985169";
+    const full_name = "Renan Breno Vital";
+    const errorSubmit = await validateStep1({document, full_name});
+    errorSubmit ? saveError(errorSubmit) : saveError({});
+  }
+
+  async function handleCPF() {
+    const data = { document: '54654' };
+    const validate = await validateCPF(data);
+    const document_error = validate['document_error'];
+    saveError({ document_error });
+  }
+
+  async function handleFullName() {
+    const data = { full_name: '' };
+    const validate = await validateFullName(data);
+    const full_name_error = validate['full_name_error'];
+    saveError({ full_name_error });
+  }
+
+  async function handleEmail() {
+    const data = { email: '' };
+    const validate = await validateEmail(data);
+    const email_error = validate['email_error'];
+    saveError({ email_error });
   }
 
   return (
@@ -94,21 +57,23 @@ export default function SignUp() {
         <Input
           label='Digite seu CPF'
           icon={IconDocument}
-          error={errors['document']}
-          mask={cpfMask}
+          mask={maskCPF}
           maxLength={14}
           keyboardType="numeric"
+          error={errors['document_error']}
+          onBlur={handleCPF}
         />
         <Input
           label='Digite seu Nome Completo'
           icon={IconPerson}
           error={errors['full_name']}
-          onBlur={name}
+          onBlur={handleFullName}
         />
         <Input
           label='Digite seu E-mail'
           icon={IconEmail}
           error={errors['email']}
+          onBlur={handleEmail}
         />
         <Button
           title="Cadastrar"
