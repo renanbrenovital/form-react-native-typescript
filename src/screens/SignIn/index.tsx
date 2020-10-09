@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Form, IconDocument, IconPassword, IconError, IconCreateAccount } from "./styles";
+import { Container, Form, IconDocument, IconPassword, IconCreateAccount } from "./styles";
 import { cpfMask } from "../../utils/masks";
 import { useTheme } from 'react-native-paper';
 import Input from "../../components/Input";

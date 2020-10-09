@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
-import { InputContainer, InputText, IconContainer, IconError } from './styles';
+import { Container, TextInput, TextError, IconContainer, IconError } from './styles';
 import { TextInputProps } from "react-native";
-import { useTheme, HelperText as InputError } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 
 interface InputProps extends TextInputProps {
   label: string;
@@ -11,7 +11,7 @@ interface InputProps extends TextInputProps {
 }
 
 interface Icon {
-  size: number;
+  size?: number;
 }
 
 const Input: React.FC<InputProps> = ({ icon: IconDefault, label, mask, error, ...rest }) => {
@@ -29,7 +29,7 @@ const Input: React.FC<InputProps> = ({ icon: IconDefault, label, mask, error, ..
 
   const hasError = useCallback(() => Boolean(error), [error]);
   
-  const InputIcon = ({ size }: Icon) => (
+  const Icon = ({ size = 22 }: Icon) => (
     <IconContainer>
       {hasError() 
         ? <IconError size={size} color={colors.error} /> 
@@ -38,21 +38,20 @@ const Input: React.FC<InputProps> = ({ icon: IconDefault, label, mask, error, ..
     </IconContainer>
   );
     
-  const Color = hasError() ? colors.error : colors.primary;
+  const underlineColor = hasError() ? colors.error : 'transparent';
 
   return (
-    <InputContainer>
-      <InputText
-        value={value}
-        label={label}
-        onChangeText={onChangeText}
-        selectionColor={Color}
-        underlineColor={Color}
-        {...rest}
-      />
-      <InputIcon size={22} />
-      <InputError type="error">{error}</InputError>
-    </InputContainer>
+      <Container>
+        <TextInput
+          value={value}
+          label={label}
+          onChangeText={onChangeText}
+          underlineColor={underlineColor}
+          {...rest}
+        />
+        <Icon />
+        <TextError>{error}</TextError>
+      </Container>
   );
 };
 
