@@ -1,24 +1,20 @@
 import React from "react";
-import { Container, Form, IconDocument, IconPassword, IconCreateAccount } from "./styles";
+import { Container, Form, IconDocument, IconPerson, IconEmail, IconSignIn } from "./styles";
 import { cpfMask } from "../../utils/masks";
 import { useTheme } from 'react-native-paper';
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import Link from "../../components/Link";
 
-export default function SignIn() {
+export default function SignUp() {
   const { colors } = useTheme();
 
   function handleSubmit() {
-    console.log('acessar conta');
-  }  
-  
-  function navigateToForgotPasswordScreen() {
-    console.log('recuperar senha');
-  }
-
-  function navigateToSignUpScreen() {
     console.log('criar conta');
+  }  
+
+  function navigateToSignInScreen() {
+    console.log('acessar minha conta');
   }
 
   return (
@@ -30,34 +26,34 @@ export default function SignIn() {
           mask={cpfMask}
           maxLength={14}
           keyboardType="numeric"
-          error="CPF é obrigatório"
+          error=""
         />
         <Input
-          label='Digite sua Senha'
-          icon={IconPassword}
+          label='Digite seu Nome Completo'
+          icon={IconPerson}
+          error=""
+        />
+        <Input
+          label='Digite seu Email'
+          icon={IconEmail}
           secureTextEntry={true}
           error=""
         />
         <Button
-          title="Entrar"
+          title="Cadastrar"
           onPress={handleSubmit} 
           background={colors.secondary}
         />
-        <Link 
-          title="Esqueceu a senha?"
-          fontSize="12px"
-          color={colors.light}
-          onPress={navigateToForgotPasswordScreen}
-        />
       </Form>      
       <Link 
-        title="Criar uma conta"
-        width="140px"
+        title="Acessar minha conta"
+        width="170px"
         fontSize="14px"
         color={colors.light}
-        icon={IconCreateAccount}
+        icon={IconSignIn}
         iconSize={20}
-        onPress={navigateToSignUpScreen} 
+        iconLeft={true}
+        onPress={navigateToSignInScreen} 
       />
     </Container>
   );
