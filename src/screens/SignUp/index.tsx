@@ -1,55 +1,92 @@
 import React, { useState, useCallback } from "react";
-import { Container, Form, IconDocument, IconPerson, IconEmail, IconSignIn } from "./styles";
-import { validateFullName, validateCPF, validateEmail, validateStep1 } from "../../utils/validations";
+import { Container, Form, IconDocument, IconPerson, IconSignIn } from "./styles";
+import { validateData, yupCPF, yupFullName } from "../../utils/validations";
 import { maskCPF } from "../../utils/masks";
 import { useTheme } from 'react-native-paper';
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import Link from "../../components/Link";
+import * as yup from 'yup';
 
-type Error = {
+interface ValidateDataProps {
+  data: object;
+  schema: yup.ObjectSchema;
+  abortEarly?: boolean;
+}
+interface Error {
   [key: string]: string;
+}
+
+interface Valid {
+  [key: string]: boolean;
 }
 
 export default function SignUp() {
   const { colors } = useTheme();
-  const [errors, setErrors] = useState({} as Error);
+  const [formError, setFormError] = useState({} as Error);
+  const [formValid, setFormValid] = useState({} as Valid);
 
   function navigateToSignInScreen() {
     console.log('acessar minha conta');
   }
 
-  const saveError = useCallback((error) => {
-    setErrors((prevErrors) => ({ ...prevErrors, ...error }));
+  const validate = useCallback(async ({data, schema}: ValidateDataProps) => {
+    const { errors } = await validateData({data, schema});
+    if(errors) {
+      setFormError((prevErrors) => ({...prevErrors, ...errors}));
+      return false;
+    }
+    return true;
+  }, [setFormError, setFormValid]);
+  
+  const handleSubmit = useCallback(async () => {
+    setFormError({});
+    const formIsValid = await validate({
+      data: {
+        document: "", 
+        full_name: ""
+      }, 
+      schema: yup.object({
+        document: yupCPF,
+        full_name: yupFullName
+      })
+    });
+    formIsValid && console.log('submeter formulário', formValid);
   }, []);
 
-  async function handleSubmit() {
-    const document = "01718985169";
-    const full_name = "Renan Breno Vital";
-    const errorSubmit = await validateStep1({document, full_name});
-    errorSubmit ? saveError(errorSubmit) : saveError({});
-  }
+  const validateDocument = useCallback(async () => {
+    const isValidDocument = await validate({
+      data: {
+        document: "01718985169", 
+      }, 
+      schema: yup.object({
+        document: yupCPF
+      })
+    })
+    setFormValid((prevValid) => ({...prevValid, document: isValidDocument}));
+  }, []);
 
-  async function handleCPF() {
-    const data = { document: '54654' };
-    const validate = await validateCPF(data);
-    const document_error = validate['document_error'];
-    saveError({ document_error });
-  }
+  const validateFullName = useCallback(async () => {
+   const isValidFullName = await validate({
+      data: {
+        full_name: "", 
+      }, 
+      schema: yup.object({
+        full_name: yupFullName
+      })
+    })
+    setFormValid((prevValid) => ({...prevValid, document: isValidFullName}));
+  }, []);
 
-  async function handleFullName() {
-    const data = { full_name: '' };
-    const validate = await validateFullName(data);
-    const full_name_error = validate['full_name_error'];
-    saveError({ full_name_error });
-  }
+  const resetDocument = useCallback(() => {
+    setFormError((prevErrors) => ({...prevErrors, document: ''}));
+    setFormValid((prevValid) => ({...prevValid, document: false }));
+  }, []);
 
-  async function handleEmail() {
-    const data = { email: '' };
-    const validate = await validateEmail(data);
-    const email_error = validate['email_error'];
-    saveError({ email_error });
-  }
+  const resetFullName = useCallback(() => {
+    setFormError((prevErrors) => ({...prevErrors, full_name: ''}));
+    setFormValid((prevValid) => ({...prevValid, full_name: false }));
+  }, []);
 
   return (
     <Container>
@@ -60,23 +97,21 @@ export default function SignUp() {
           mask={maskCPF}
           maxLength={14}
           keyboardType="numeric"
-          error={errors['document_error']}
-          onBlur={handleCPF}
+          error={formError['document']}
+          valid={formValid['document']}
+          onFocus={resetDocument}
+          onBlur={validateDocument}
         />
         <Input
-          label='Digite seu Nome Completo'
+          label='Digite o Nome Completo'
           icon={IconPerson}
-          error={errors['full_name']}
-          onBlur={handleFullName}
-        />
-        <Input
-          label='Digite seu E-mail'
-          icon={IconEmail}
-          error={errors['email']}
-          onBlur={handleEmail}
+          error={formError['full_name']}
+          valid={formValid['full_name']}
+          onFocus={resetFullName}
+          onBlur={validateFullName}
         />
         <Button
-          title="Cadastrar"
+          title="Continuar"
           onPress={handleSubmit} 
           background={colors.secondary}
         />

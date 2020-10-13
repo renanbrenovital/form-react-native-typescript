@@ -7,16 +7,16 @@ interface InputProps extends TextInputProps {
   label: string;
   icon?: any;
   error?: string;
+  valid: boolean;
   mask?(text: string): React.SetStateAction<string>;
 }
 interface Icon {
   size?: number;
 }
 
-const Input: React.FC<InputProps> = ({ icon: IconDefault, label, mask, error, ...rest }) => {
+const Input: React.FC<InputProps> = ({ icon: IconDefault, label, mask, error, valid, ...rest }) => {
   const { colors } = useTheme();
   const [value, setValue] = useState('');
-  const [isValid, setIsValid] = useState(false);
   
   function onChangeText(text: string) {
     const value = mask ? mask(text) : text;
@@ -24,12 +24,13 @@ const Input: React.FC<InputProps> = ({ icon: IconDefault, label, mask, error, ..
   }
 
   const hasError = useCallback(() => Boolean(error), [error]);
+  const isValid = useCallback(() => Boolean(valid), [valid]);
   
   const Icon = ({ size = 22 }: Icon) => (
     <IconContainer>
       {hasError() 
         ? <IconError size={size} color={colors.error} /> 
-        : <IconDefault size={size} color={isValid ? 'green': colors.primary} /> 
+        : <IconDefault size={size} color={isValid() ? 'green': colors.primary} />
       }
     </IconContainer>
   );

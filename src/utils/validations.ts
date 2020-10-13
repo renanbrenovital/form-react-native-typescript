@@ -1,83 +1,30 @@
 import * as yup from 'yup';
 
-type Error = {
-  [key: string]: string;
-}
-
-type YupErrors = {
-  inner: Array<Error>;
-}
-
-type Step1 = {
-	document: string;
-  full_name: string;
-}
-
-type Validate = {
+interface ValidateDataProps {
   data: object;
   schema: yup.ObjectSchema;
   abortEarly?: boolean;
 }
 
-type CPF = {
-  document: string;
+interface Errors {
+  [key: string]: string | boolean;
 }
 
-type FullName = {
-  full_name: string;
-}
+export const yupCPF = yup.string().required('CPF é obrigatório');
+export const yupFullName = yup.string().required('Nome é obrigatório');
+export const yupPhone = yup.string().required('Telefone é obrigatório');
+export const yupEmail = yup.string().required('E-mail é obrigatório').email('E-mail inválido');
+export const yupPassword = yup.string().required('Senha é obrigatória').min(8, 'No mínimo 8 dígitos');
+export const schemaPasswordConfirmation = yup.string().oneOf([yup.ref('password'), ''], 'Senhas devem ser iguais');
 
-type Email = {
-  email: string;
-}
-
-const schemaSinUpStep1: yup.ObjectSchema<Step1> = yup.object({
-  document: yup.string().required('CPF é obrigatório').defined(),
-  full_name: yup.string().required('Nome é obrigatório').defined(),
-}).defined();
-
-const schemaCPF: yup.ObjectSchema = yup.object({
-  document: yup.string().required('CPF é obrigatório').defined(),
-}).defined();  
-
-const schemaFullName: yup.ObjectSchema = yup.object({
-  full_name: yup.string().required('Nome é obrigatório').defined(),
-}).defined();  
-
-const schemaEmail: yup.ObjectSchema = yup.object({
-  email: yup.string().required('E-mail é obrigatório').email('E-mail inválido').defined(),
-}).defined();
-
-function organizeYupErrors(yupErrors: YupErrors) {
-  const errors: Error = {};
-  yupErrors.inner.forEach((error) => {
-    const { path, message } = error;
-    errors[`${path}_error`] = message;
-  });
-  return errors;
+function YupErrors(yupErrors: yup.ValidationError) {
+  const errors: Errors = {};
+  yupErrors.inner.forEach((error) => errors[error.path] = error.message);
+  return { errors };
 }
   
-async function validate({ data, schema, abortEarly = false }: Validate) {
+export async function validateData({ data, schema, abortEarly = false }: ValidateDataProps) {
   return schema
     .validate(data, { abortEarly })
-    .catch((yupErrors: YupErrors) => {
-      const errors = organizeYupErrors(yupErrors);
-      return errors;
-    });
-}
-
-export function validateStep1(data: Step1) {
-  return validate({ data, schema: schemaSinUpStep1 });
-}
-
-export function validateCPF(data: CPF) {
-  return validate({ data, schema: schemaCPF });
-}
-
-export function validateFullName(data: FullName) {
-  return validate({ data, schema: schemaFullName });
-}
-
-export function validateEmail(data: Email) {
-  return validate({ data, schema: schemaEmail });
+    .catch((errors: yup.ValidationError) => YupErrors(errors));
 }
